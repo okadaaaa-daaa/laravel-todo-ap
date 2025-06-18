@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - laravel_data:/var/www
+      - ./laravel-app:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - laravel
@@ -23,7 +23,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - laravel_data:/var/www
+      - ./laravel-app:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     networks:
       - laravel
@@ -46,9 +46,25 @@ services:
     networks:
       - laravel
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: laravel
+      PMA_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    networks:
+      - laravel
+    depends_on:
+      - db
+
 volumes:
   dbdata:
-  laravel_data:
 
 networks:
   laravel:
